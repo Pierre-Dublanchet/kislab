@@ -1,4 +1,10 @@
-# KISLAB: KINEMATIC INVERSION OF SLIP IN THE LABORATORY 
+## KISLAB: Kinematic Inversion of Slip in the LABoratory 
+
+Package to infer quasi-static slip in space and time along a laboratory rock interface, from strain gauges and shortening measurements.
+Details are provided in:
+
+Dublanchet, P., Passelegue, F.X., Chauris, H., Gesret, A., Twardzik, C., Noël C. (2024) Kinematic inversion of aseimic slip during the nucleation of
+laboratory earthquakes, Journal of Geophysical Research: Solid Earth
 
 Follow the steps (1) to (14) in the main directory containing the following subdirectories:
 
