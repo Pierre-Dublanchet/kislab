@@ -83,79 +83,101 @@ KIS_FAULT_TRI.m:
 #### (3) Compute static Green's function:
 
 KIS_GF_SAWCUT.m
-    -input:
-        -./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        -./GAUGE_LOC/REPMANIP/jauges.mat (strain gauges coordinates in the sample reference frame)
-        -./SAMPLE_MESH_FILES/REPMANIP/RockSampleMesh3D.stl  rock sample geometry file obtained from GMSH for instance
-        -./SAMPLE_MESH_FILES/REPMANIP/Nodes_xy_inversion_linear_rHMAXF.mat (nodes coordinates, obtained from KIS_FAULT_TRI.m )
-    -output:
-        -./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF_PcXXMPa.mat Green function, fault nodes coordinates, gauges coordinates, elt size
+
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./GAUGE_LOC/REPMANIP/jauges.mat (strain gauges coordinates in the sample reference frame)
+        - ./SAMPLE_MESH_FILES/REPMANIP/RockSampleMesh3D.stl  rock sample geometry file obtained from GMSH for instance
+        - ./SAMPLE_MESH_FILES/REPMANIP/Nodes_xy_inversion_linear_rHMAXF.mat (nodes coordinates, obtained from KIS_FAULT_TRI.m )
+        
+    - output:
+    
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF_PcXXMPa.mat Green function, fault nodes coordinates, gauges coordinates, elt size
 
 #### (4) Build gradient (d/dx, d/dy) and Spatial average operators for f(x,y) where (x,y) are fault nodes coordinates (in the fault reference frame):
 
-KIS_GRADIENT_FEM.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
-        ./SAMPLE_MESH_FILES/REPMANIP/Nodes_xy_inversion_linear_rHMAXF.mat (KIS_FAULT_TRI.m )
-    output:
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/GHmatrix_rHMAXF.mat
+KIS_GRADIENT_FEM.m:
 
-KIS_MEAN_FEM.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
-        ./SAMPLE_MESH_FILES/REPMANIP/Nodes_xy_inversion_linear_rHMAXF.mat (KIS_FAULT_TRI.m)
-    output:
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
+        - ./SAMPLE_MESH_FILES/REPMANIP/Nodes_xy_inversion_linear_rHMAXF.mat (KIS_FAULT_TRI.m )
+        
+    - output:
+    
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/GHmatrix_rHMAXF.mat
 
-#--------------------------------------------------------------------------------------------------------------------#
-#--(5) Green's function representation and resolution analysis-------------------------------------------------------#
-#--------------------------------------------------------------------------------------------------------------------#
-KIS_PLT_GF.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat (from KIS_GF_SAWCUT.m)
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat (from KIS_MEAN_FEM.m)
-        ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
-    output:
-        ./FIGURES/REPMANIP/resolution_rHMAXF.eps(png) plot of resolution and restitution for a set of nodes
-        ./FIGURES/REPMANIP/node_number_map_rHMAXF.eps(png) map plotof node numbers
-        ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node
+KIS_MEAN_FEM.m:
+
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
+        - ./SAMPLE_MESH_FILES/REPMANIP/Nodes_xy_inversion_linear_rHMAXF.mat (KIS_FAULT_TRI.m)
+    - output:
+    
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat
+
+#### (5) Green's function representation and resolution analysis
+
+KIS_PLT_GF.m:
+
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat (from KIS_GF_SAWCUT.m)
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat (from KIS_MEAN_FEM.m)
+        - ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
+        
+    - output:
+    
+        - ./FIGURES/REPMANIP/resolution_rHMAXF.eps(png) plot of resolution and restitution for a set of nodes
+        - ./FIGURES/REPMANIP/node_number_map_rHMAXF.eps(png) map plotof node numbers
+        - ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node
 
 
-#--------------------------------------------------------------------#
-#--(6) Deterministic inversion---------------------------------------#
-#--------------------------------------------------------------------#
+#### (6) Deterministic inversion
+
 KIS_D.m
-    includes:
-        ./fminlbfgs_version2c/fminlbfgs.m
-        ./slip_basis_fn_sc_smooth.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/GHmatrix_rHMAXF.mat Gradient operator
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
-    output:
-        ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat'
 
+    - includes:
+    
+        - ./fminlbfgs_version2c/fminlbfgs.m
+        - ./slip_basis_fn_sc_smooth.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/GHmatrix_rHMAXF.mat Gradient operator
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
+        
+    - output:
+    
+        - ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat'
 
+#### (7) Compute epistemic uncertainty from the output of a KIS_D.m run
 
-#----------------------------------------------------------------------#
-#--(7) Compute epistemic uncertainty from the output of a KIS_D.m run--#
-#----------------------------------------------------------------------#
-KIS_EPISTEMIC.m
-    includes:
-        ./slip_basis_fn_sc_smooth.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat (output of KIS_D.m)
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./GRADIENT_MEAN_OPERATORS/MANIP_LONDRES/MVmatrix_rHMAXF.mat Mean value operator
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-    output:
-        .print value of epistemic uncertainty for strain and slip in title of figure 2
+KIS_EPISTEMIC.m:
+
+    - includes:
+    
+        - ./slip_basis_fn_sc_smooth.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat (output of KIS_D.m)
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./GRADIENT_MEAN_OPERATORS/MANIP_LONDRES/MVmatrix_rHMAXF.mat Mean value operator
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        
+    - output:
+    
+        - .print value of epistemic uncertainty for strain and slip in title of figure 2
 
 REMARK: this should be done after a first run of KIS_D.m, then the output should be used to adjust std strain and slip values (modify KIS_PARAMETRSATION), then run again
 step (1) and step (6)
