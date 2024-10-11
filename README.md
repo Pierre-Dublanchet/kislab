@@ -359,3 +359,9 @@ Strain gauge coordinates file (jauges.mat) should contain a matrix jauges (ng x 
 - column 1: x coordinates
 - column 2: y coordinates
 - column 3: z coordinates
+
+### Example
+
+Synthetic data (resulting from elliptical crack growth) are provided in ./DATA/MANIP_TEST/. Corresponding Fault and Rock Sample geometry files (.stl) are provided in ./SAMPLE_MESH_FILES/MANIP_TEST/. Parametrisation to run the inversion and generate the outputs is indicated in the current KIS_PARAMETRISATION.m. 
+
+This example can be used to illustrate and practice the matlab modules. Note however that a proper MCMC exploration would require much more iterations than what is currently specified in KIS_PARAMETRISATION.m.
