@@ -182,139 +182,180 @@ KIS_EPISTEMIC.m:
 REMARK: this should be done after a first run of KIS_D.m, then the output should be used to adjust std strain and slip values (modify KIS_PARAMETRSATION), then run again
 step (1) and step (6)
 
-#---------------------------------------------------------------------------#
-#--(8) Bayesian inversion (MCMC)--------------------------------------------#
-#---------------------------------------------------------------------------#
-KIS_MCMC.m
-    includes:
-        ./slip_basis_fn_sc_smooth.m
-        ./mcmc.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat (output of KIS_D.m) or specify initial model by hand
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-    output:
-        ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (mcmc models chains (chain), rejection rate (alpha, should be between 0.7 and 0.8), -log likelihood function (logP))
+#### (8) Bayesian inversion (MCMC)
 
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-#--(9) Plot rms evolution and acceptance rate for MCMC chain------------------------------------------------------------------------------------------------------#
-#------------------------------------------------------------------------------------------------------------------------------------------------------------------#
-KIS_RMS_DET_MCMC.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
-    output:
-        ./FIGURES/REPMANIP/rmsidetmcmc_FILEID.png 
+KIS_MCMC.m:
 
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-#--(10) Post-process MCMC chain 1 (reconstruct mean slip history and slip history range from the MCMC chain)--------------------------------------------#
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-KIS_SLIP_MCMC.m
-    includes:
-        ./slip_basis_fn_sc_smooth.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-    output:
-        ./PARAM_INVERSION/REPMANIP/predictions_mcmc_rHMAXF_FILEID.mat: mean, max, and min slip, strain and average slip from mcmc chain
-
-
-KIS_DENS_SLIP.m
-    includes:
-        ./slip_basis_fn_sc_smooth.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-    output:
-        ./PARAM_INVERSION/REPMANIP/slip_dens_map_FILEID.mat: pdf of slip history for each fault node
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-#--(11) Plot results of deterministic inversion-------------------------------------------------------------------------------------------------------#
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-KIS_PLT_DET_SLIP.m
-    includes:
-        ./slip_basis_fn_sc_smooth.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat (from KIS_D.m)
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-        ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
-        ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node (from KIS_PLT_GF.m)
-    output:
-        ./FIGURES/REPMANIP/slip_map_FILEID_lsREGUL.png(eps): plot of slip history
-        ./FIGURES/REPMANIP/fit_jauge_FILEID_lsREGUL.png(eps): plot of data vs. best model predictions (strain and slip)
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-#--(12) Plot results of Bayesian inversion-----------------------------------------------------------------------------------------------------------#
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-KIS_PLT_MCMC_SLIP.m
-    includes:
-        ./slip_basis_fn_sc_smooth.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/REPMANIP/predictions_mcmc_rHMAXF_FILEID.mat (from KIS_SLIP_MCMC.m)
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-        ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
-        ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node (from KIS_PLT_GF.m)
-    output:
-        ./FIGURES/REPMANIP/slip_map_meanmcmc_FILEID.eps(png): plot of slip map from mean mcmc model 
-        ./FIGURES/REPMANIP/sliprate_map_meanmcmc_FILEID.eps(png): plot of slip rate map from mean mcmc model 
-        ./FIGURES/REPMANIP/sigslip_map_meanmcmc_FILEID.eps(png) : plot of slip uncertainty (1sigma) from mcmc 
-        ./FIGURES/REPMANIP/fit_jauge_meanmcmc_FILEID.eps(png): plot of data vs. best model predictions (strain and slip) 
-        ./FIGURES/REPMANIP/vr_mcmc_FILEID.eps(png): rupture speed plots
-        ./FIGURES/REPMANIP/stdu_mcmc_FILEID.eps(png): distribution of slip uncertainty plot
-
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-#--(13) Plot joint PDF from MCMC exploration---------------------------------------------------------------------------------------------------------#
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-KIS_PLT_PDF.m
-    includes:
-        ./slip_basis_fn_sc_smooth.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-    output:
-        ./FIGURES/REPMANIP/pdf_Tdu_mcmc_FILEID.eps(png): pdf plot delta u vs T (one panel per node)
-        ./FIGURES/REPMANIP/pdf_Tto_mcmc_FILEID.eps(png): pdf plot t0 vs T (one panel per node)
-        ./FIGURES/REPMANIP/pdf_todu_mcmc_FILEID.eps(png): pdf plot delta u vs t0 (one panel per node)
+    - includes:
     
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-#--(14) Plot slip density (pdf of slip history)------------------------------------------------------------------------------------------------------#
-#----------------------------------------------------------------------------------------------------------------------------------------------------#
-KIS_PLT_SLIP_DENS.m
-    input:
-        ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
-        ./PARAM_INVERSION/REPMANIP/predictions_mcmc_rHMAXF_FILEID.mat (from KIS_SLIP_MCMC.m)
-        ./PARAM_INVERSION/REPMANIP/slip_dens_map_FILEID.mat: pdf of slip history for each fault node (from KIS_DENS_SLIP.m)
-        ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
-        ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
-        ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
-        ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node (from KIS_PLT_GF.m)
-    output:
-        ./FIGURES/REPMANIP/slip_density_plots_FILEID.eps(png): pdf of slip history (one panel per node)
+        - ./slip_basis_fn_sc_smooth.m
+        - ./mcmc.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat (output of KIS_D.m) or specify initial model by hand
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        
+    - output:
+     
+        - ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (mcmc models chains (chain), rejection rate (alpha, should be between 0.7 and 0.8), -log likelihood function (logP))
 
 
+#### (9) Plot rms evolution and acceptance rate for MCMC chain
+
+KIS_RMS_DET_MCMC.m:
+
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
+        
+    - output:
+    
+        - ./FIGURES/REPMANIP/rmsidetmcmc_FILEID.png 
+
+#### (10) Post-process MCMC chain 1 (reconstruct mean slip history and slip history range from the MCMC chain)
+
+KIS_SLIP_MCMC.m:
+
+    - includes:
+    
+        - ./slip_basis_fn_sc_smooth.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        
+    - output:
+    
+        - ./PARAM_INVERSION/REPMANIP/predictions_mcmc_rHMAXF_FILEID.mat: mean, max, and min slip, strain and average slip from mcmc chain
+
+
+KIS_DENS_SLIP.m:
+
+    - includes:
+    
+        - ./slip_basis_fn_sc_smooth.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        
+    - output:
+    
+        - ./PARAM_INVERSION/REPMANIP/slip_dens_map_FILEID.mat: pdf of slip history for each fault node
+
+#### (11) Plot results of deterministic inversion
+
+KIS_PLT_DET_SLIP.m:
+
+    - includes:
+    
+        - ./slip_basis_fn_sc_smooth.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/REPMANIP/inv_param_strain_rHMAXF_FILEID_lsREGUL.mat (from KIS_D.m)
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        - ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
+        - ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node (from KIS_PLT_GF.m)
+        
+    - output:
+    
+        - ./FIGURES/REPMANIP/slip_map_FILEID_lsREGUL.png(eps): plot of slip history
+        - ./FIGURES/REPMANIP/fit_jauge_FILEID_lsREGUL.png(eps): plot of data vs. best model predictions (strain and slip)
+
+#### (12) Plot results of Bayesian inversion
+
+KIS_PLT_MCMC_SLIP.m:
+
+    - includes:
+    
+        - ./slip_basis_fn_sc_smooth.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/REPMANIP/predictions_mcmc_rHMAXF_FILEID.mat (from KIS_SLIP_MCMC.m)
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./GRADIENT_MEAN_OPERATORS/REPMANIP/MVmatrix_rHMAXF.mat Mean value operator
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        - ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
+        - ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node (from KIS_PLT_GF.m)
+        
+    - output:
+    
+        - ./FIGURES/REPMANIP/slip_map_meanmcmc_FILEID.eps(png): plot of slip map from mean mcmc model 
+        - ./FIGURES/REPMANIP/sliprate_map_meanmcmc_FILEID.eps(png): plot of slip rate map from mean mcmc model 
+        - ./FIGURES/REPMANIP/sigslip_map_meanmcmc_FILEID.eps(png) : plot of slip uncertainty (1sigma) from mcmc 
+        - ./FIGURES/REPMANIP/fit_jauge_meanmcmc_FILEID.eps(png): plot of data vs. best model predictions (strain and slip) 
+        - ./FIGURES/REPMANIP/vr_mcmc_FILEID.eps(png): rupture speed plots
+        - ./FIGURES/REPMANIP/stdu_mcmc_FILEID.eps(png): distribution of slip uncertainty plot
+
+#### (13) Plot joint PDF from MCMC exploration
+
+KIS_PLT_PDF.m:
+
+    - includes:
+    
+        - ./slip_basis_fn_sc_smooth.m
+        
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/MANIP_NICE/mcmc_param_strain_rHMAXF_FILEID_nit*.mat (output of KIS_MCMC.m)
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        
+    - output:
+    
+        - ./FIGURES/REPMANIP/pdf_Tdu_mcmc_FILEID.eps(png): pdf plot delta u vs T (one panel per node)
+        - ./FIGURES/REPMANIP/pdf_Tto_mcmc_FILEID.eps(png): pdf plot t0 vs T (one panel per node)
+        - ./FIGURES/REPMANIP/pdf_todu_mcmc_FILEID.eps(png): pdf plot delta u vs t0 (one panel per node)
+    
+
+#### (14) Plot slip density (pdf of slip history)
+
+KIS_PLT_SLIP_DENS.m:
+
+    - input:
+    
+        - ./KIS_PARAM.mat (from KIS_PARAMETRISATION.m)
+        - ./PARAM_INVERSION/REPMANIP/predictions_mcmc_rHMAXF_FILEID.mat (from KIS_SLIP_MCMC.m)
+        - ./PARAM_INVERSION/REPMANIP/slip_dens_map_FILEID.mat: pdf of slip history for each fault node (from KIS_DENS_SLIP.m)
+        - ./GREEN_FUNCTIONS/REPMANIP/strain_gf_saw_cut_sample_tr_quadratic_rHMAXF_rHMAXGF.mat Green's function
+        - ./DATA(OR SYNTHETIC_DATA)/REPMANIP/datafile.mat strain and slip data
+        - ./SAMPLE_MESH_FILES/REPMANIP/g_num_fault_sawcut_rHMAXF.mat (KIS_FAULT_TRI.m )
+        - ./GREEN_FUNCTIONS/REPMANIP/Resolution_matrix_rHMAXF.mat value of resolution at each node (from KIS_PLT_GF.m)
+        
+    - output:
+    
+        - ./FIGURES/REPMANIP/slip_density_plots_FILEID.eps(png): pdf of slip history (one panel per node)
+
+
+### Remarks
 
 Data file (datafile.mat) should contain three variables:
 
-tobs :time of strain and slip measurement (1xnt vector, nt being the number of observations)
-dobs :strain values (ngxnt matrix, ng being the number of strain gauges)
-dobsms :mean slip values (1xnt vector)  
+- tobs :time of strain and slip measurement (1xnt vector, nt being the number of observations)
+- dobs :strain values (ngxnt matrix, ng being the number of strain gauges)
+- dobsms :mean slip values (1xnt vector)  
 
-Strain gauge coordinates file (jauges.mat) should contain a matrix jauges (ng x 3) with
-column 1: x coordinates
-column 2: y coordinates
-column 3: z coordinates
+Strain gauge coordinates file (jauges.mat) should contain a matrix jauges (ng x 3) with:
+
+- column 1: x coordinates
+- column 2: y coordinates
+- column 3: z coordinates
