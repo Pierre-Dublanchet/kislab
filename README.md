@@ -1,14 +1,4 @@
-%----------------------------------------------------------------%
-%                                                                %
-%                           KISLAB                               %
-%                                                                %
-% Copyright (c) (2024) Pierre Dublanchet                         %
-% Author:  Pierre Dublanchet (Mines Paris PSL/Armines)           %
-% Contact: pierre.dublanchet@minesparis.psl.eu                   %
-% License: MIT License                                           %
-%                                                                %
-%----------------------------------------------------------------%
-KINEMATIC INVERSION OF SLIP IN THE LABORATORY 
+# KISLAB: KINEMATIC INVERSION OF SLIP IN THE LABORATORY 
 
 Follow the steps (1) to (14) in the main directory containing the following subdirectories:
 
