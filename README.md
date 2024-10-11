@@ -8,6 +8,38 @@ Details are provided in:
 ***Dublanchet, P., Passelegue, F.X., Chauris, H., Gesret, A., Twardzik, C., Noël C. (2024) Kinematic inversion of aseimic slip during the nucleation of
 laboratory earthquakes, Journal of Geophysical Research: Solid Earth***
 
+## Third party source code
+
+The source code of KISLAB includes external source codes (see licenses
+notices in licenses):
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Name</strong></th>
+<th style="text-align: left;"><strong>License</strong></th>
+<th style="text-align: left;"><strong>URL</strong></th>
+<th style="text-align: left;"><strong>Copyright</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">fminlbfgs.m</td>
+<td style="text-align: left;">see licenses</td>
+<td style="text-align: left;"><a href="https://fr.mathworks.com/matlabcentral/fileexchange/23245-fminlbfgs-fast-limited-memory-optimizer"
+class="uri">https://fr.mathworks.com/matlabcentral/fileexchange/23245-fminlbfgs-fast-limited-memory-optimizer</a></td>
+<td style="text-align: left;">Copyright (c) 2009, Dirk-Jan Kroon</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mcmc.m</td>
+<td style="text-align: left;">see licenses</td>
+<td style="text-align: left;"><a
+href="https://fr.mathworks.com/matlabcentral/fileexchange/47912-markov-chain-monte-carlo-sampling-of-posterior-distribution"
+class="uri">https://fr.mathworks.com/matlabcentral/fileexchange/47912-markov-chain-monte-carlo-sampling-of-posterior-distribution</a></td>
+<td style="text-align: left;">Copyright (c) 2015, Aslak Grinsted</td>
+</tbody>
+</table>
+
 
 ### Running codes
 
